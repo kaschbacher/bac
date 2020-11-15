@@ -59,7 +59,6 @@ def partition_users(uuids: np.ndarray, split: List) -> dict:
     train_ui, dev_ui, test_ui = np.split(uuids, [int(train_per*s), int((train_per+dev_per)*s)])
     
     assert len(uuids) == train_ui.shape[0] + dev_ui.shape[0] + test_ui.shape[0]
-    #qa_user_partitions(train_ui, dev_ui, test_ui)
     qa_user_partitions(train_ui, dev_ui, test_ui)
     user_id_partitions = {'train': train_ui, 'dev': dev_ui, 'test': test_ui}
     return user_id_partitions
