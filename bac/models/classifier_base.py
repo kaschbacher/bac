@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-import pandas as import pd
+import pandas as pd
 
 from bac.models.model_base import ModelBase
 
@@ -25,3 +25,4 @@ class ClassifierBase(ModelBase):
         Returns:
             pd.Series: scores for each row of X - probability
         """
+        pass

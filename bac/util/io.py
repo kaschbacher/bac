@@ -2,6 +2,11 @@ import pandas as pd
 import os
 from typing import Sequence, List
 import json
+import sys
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 def load_data(filepath: str) -> pd.DataFrame:
@@ -14,7 +19,7 @@ def load_data(filepath: str) -> pd.DataFrame:
         pd.DataFrame: dataframe formatted data
     """
     df = pd.read_parquet(filepath, engine="pyarrow")
-    print (df.shape, '\n')# QA
+    logging.info(df.shape, '\n')# QA
     
     # QA datafile organization
     assert (df.shape[0]>0) & ~(df.empty)
@@ -28,13 +33,19 @@ def load_data_partitions(folder: str, filenames: Sequence[str])->dict:
     if os.path.exists(folder):
         for filename in filenames:
             filepath = os.path.join(folder, filename)
+            logging.info(f"Loading {filepath}...")
             df = pd.read_parquet(filepath, engine="pyarrow")
             name = filename.replace(".parquet", "")
             dfs_map[name] = df
-            print(f"Loaded {name} with shape: {df.shape}")
+            logging.info(f"DF {name} loaded with shape: {df.shape}")
     return dfs_map
 
-
+def load_feature_labels(feature_label_fpath: str):
+    """Read in feature labels from external json"""
+    with open(feature_label_fpath, 'r') as json_f:
+        return json.load(json_f)
+    
+    
 # def package_data(partitions: dict, names: List, idx_uid: int=1):
 #     """ Partition data for XGboost
 #     Assign data - (Note: must dropna first, otherwise missing=-999 throws an error because NaNs also still exist)
@@ -51,11 +62,6 @@ def load_data_partitions(folder: str, filenames: Sequence[str])->dict:
 #     partitions['dtest'] = xgb.DMatrix(data=partitions['X_test'], label=partitions['y_test'], 
 #                                       feature_names=names[1:], missing=MISSING_VALUE)
 #     return partitions
-
-def load_feature_labels(feature_label_fpath: str):
-    """Read in feature labels from external json"""
-    with open(feature_label_fpath, 'r') as json_f:
-        return json.load(json_f)
 
 
 # def get_balance_weight(y_train):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This module is for training models.
+This module is for training models without requireing a base class.
 
 Examples:
     Example command line executable::
