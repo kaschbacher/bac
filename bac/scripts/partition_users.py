@@ -11,8 +11,10 @@ TRAIN_P, DEV_P = .70, .10
 SPLIT = [TRAIN_P, DEV_P, 1 - (TRAIN_P + DEV_P)]
 
 SEED = 3
+# BACTRACK_FILEPATH = '/mnt/data/bac_2019-10-12.parquet'
+# OUTPUT_FOLDER = '/mnt/data'
 BACTRACK_FILEPATH = '/mnt/data/bac_2019-10-12.parquet'
-OUTPUT_FOLDER = '/mnt/data'
+OUTPUT_FOLDER = '/volume/data'
 
 
 def shuffle_uids(uuids: np.ndarray) -> Sequence[int]:

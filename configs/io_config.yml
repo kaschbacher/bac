@@ -1,0 +1,11 @@
+bac_feature_fpath: '/mnt/data/bac_2019-10-12.parquet'
+partitions_folder: '/volume/data/'
+partitions_filenames:
+  - train.parquet
+  - dev.parquet
+  - test.parquet
+feature_labels_fpath: '/mnt/data/features/feature_labels.json'
+feature_subset_fpath: '/mnt/data/features/feature_subset.json'
+figures_fpath: '/volume/data/figures'
+models_folder: '/volume/data/models'
+model_in_fpath: '/volume/data/models/lgb_model_2020-11-21.joblib'

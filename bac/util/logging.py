@@ -41,6 +41,7 @@ def setup_logging(logging_config="logging.yml", default_level=logging.INFO):
         Path(config["handlers"]["error_file_handler"]["filename"]).parent.mkdir(
             exist_ok=True
         )
+        import ipdb; ipdb.set_trace()
         logging.config.dictConfig(config)
         config_method = logging_config
         # set colored log (console streaming) to use params set in config
