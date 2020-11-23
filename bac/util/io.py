@@ -29,6 +29,7 @@ def load_data(filepath: str) -> pd.DataFrame:
     return df
 
 def load_data_partitions(folder: str, filenames: Sequence[str])->dict:
+    """Load the train, dev, test parquet files from local"""
     dfs_map = {}
     if os.path.exists(folder):
         for filename in filenames:
@@ -40,36 +41,72 @@ def load_data_partitions(folder: str, filenames: Sequence[str])->dict:
             logging.info(f"DF {name} loaded with shape: {df.shape}")
     return dfs_map
 
+def clean_data_partitions(dfs_map: dict) -> dict:
+    """No missing target data allowed."""
+    dfs_map_clean = {}
+    for key, df in dfs_map.items():
+        df = df.dropna(subset=df.columns[0])
+        dfs_map_clean[key] = df
+    return dfs_map_clean
+
+def assign_train_dev(dfs_map: dict) -> Sequence[pd.DataFrame]:
+    """
+    Reformat dictionary into X_train, y_train, etc
+    -- excluding the user_id in column[1].
+    """
+    train = dfs_map["train"]
+    dev = dfs_map["dev"]
+    X_train = train.iloc[:, 2:]
+    y_train = train["bac_clinical"]
+    X_dev = dev.iloc[:, 2:]
+    y_dev = dev["bac_clinical"]
+    return X_train, y_train, X_dev, y_dev
+
+def fill_missing_data(
+    dfs_list: Sequence[pd.DataFrame], columns: Sequence[str] = None, missing_value: int = -999
+    ) -> Sequence[pd.DataFrame]:
+    """Fill in missing data with a specified value.
+
+    Args:
+        features (Sequence[dfs]): a list of multiple dfs - train, dev, etc
+        columns: a list of column names to fill
+        missing_value (int): value to fill
+
+    Returns:
+        Sequence[dfs]: [description]
+    """
+    assert isinstance(missing_value, int)
+    clean_dfs = []
+    for df in dfs_list:
+        if columns is None:
+            columns = df.columns
+        df[columns] = df[columns].fillna(value = missing_value)
+        clean_dfs.append(df)
+    return clean_dfs
+
 def load_feature_labels(feature_label_fpath: str):
     """Read in feature labels from external json"""
     with open(feature_label_fpath, 'r') as json_f:
         return json.load(json_f)
     
+def limit_features(
+    dfs: Sequence[pd.DataFrame], 
+    drop_cols: Sequence[str]=None, 
+    keep_cols: Sequence[str]=None
+    ) -> Sequence[pd.DataFrame]:
+    """ 
+    Limits the feature set of multiple df partitions of the dataset.
+    Assumes the input dfs are X_train, X_dev, X_test with no user id or y
     
-# def package_data(partitions: dict, names: List, idx_uid: int=1):
-#     """ Partition data for XGboost
-#     Assign data - (Note: must dropna first, otherwise missing=-999 throws an error because NaNs also still exist)
-#     """
-    
-#     print ("\nSetting up data-matrices for Gradient Boosted Classification Tree with Outcome: {}...\n".format(names[0]))
-#     names = [str(name) for name in names]# convert from byte to string
-#     del names[idx_uid]# Omit user_id at idx, 1
-#     partitions['names']=names
-#     partitions['dtrain'] = xgb.DMatrix(data=partitions['X_train'], label=partitions['y_train'], 
-#                                        feature_names=names[1:], missing=MISSING_VALUE)
-#     partitions['ddev'] = xgb.DMatrix(data=partitions['X_dev'], label=partitions['y_dev'], 
-#                                      feature_names=names[1:], missing=MISSING_VALUE)
-#     partitions['dtest'] = xgb.DMatrix(data=partitions['X_test'], label=partitions['y_test'], 
-#                                       feature_names=names[1:], missing=MISSING_VALUE)
-#     return partitions
-
-
-# def get_balance_weight(y_train):
-
-#     pos = np.sum(y_train, axis=0, dtype=int)
-#     neg = y_train.shape[0]-pos
-#     print ('\n{} positive cases and {} negative cases'.format(pos, neg))
-
-#     scale_pos_weight = round(neg/pos, 2)# 2.38 for the BACtrack dataset
-#     print ('Scale Weight for balanced classes would be: {}'.format(scale_pos_weight))
-#     return scale_pos_weight
+    Allows either dropping columns or keeping columns
+    """
+    out_dfs = []
+    for df in dfs:
+        if drop_cols is not None:
+            remaining_cols = set(df.columns).difference(drop_cols)
+            df = df[remaining_cols]
+        if keep_cols is not None:
+            keep_cols = [col for col in keep_cols if col in df.columns]
+            df = df[keep_cols]
+        out_dfs.append(df)
+    return out_dfs

@@ -2,7 +2,7 @@ import logging
 import sys
 from typing import Sequence, Dict
 import pandas as pd
-from pandas import is_numeric_dtype
+from pandas.api.types import is_numeric_dtype
 import joblib
 
 from abc import ABC, abstractmethod
@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from bac.features.feature_importances import compute_feature_importances
 
 logger = logging.getLogger(__name__)
-logger.setLevel(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 class ModelBase(ABC):

@@ -64,6 +64,7 @@ def main(io_config = "/mnt/configs/io_config.yml",
     fig_folder = config["figures_fpath"]
     figpath = os.path.join(fig_folder, "corr/feature_correlations_all.pdf")
     plt.savefig(figpath, format="pdf", dpi=300, bbox_inches='tight')
+    plt.close()
     logging.info(f"Saved heatmap of all features to: {figpath}")
 
     # Reduce the Feature Set
@@ -73,28 +74,8 @@ def main(io_config = "/mnt/configs/io_config.yml",
     fig = make_heat_map(train, keep_names, feature_labels)
     figpath = os.path.join(fig_folder, "corr/feature_correlations_reduced.pdf")
     plt.savefig(figpath, format="pdf", dpi=300, bbox_inches='tight')
-    logging.info(f"Saved heatmap of reduced feature subset to: {figpath}\n")
-
-    # TODO: replace with a new LightGBC model
-    # Fit Model with Reduced Feature Set; Evaluate the AUC_ROC
-    # partitions, boosting_params = bac.randomize(by='users', data=data[:, keeps], names=keep_names)
-    # user_roc = bac.run_balanced(boosting_params, partitions)
-    # print ('With Refined set of {} features, randomization by Users AUC: {:.02f}\n'.format(len(keep_names)-2, user_roc))
-
-    # ### Save output as a json
-
-    # # TODO: Not sure what this is doing
-    # # Build the dict
-    # features_heatmap_out = {}
-    # features_heatmap_out['names']=keep_names
-    # features_heatmap_out['indices']= [int(keep) for keep in keeps]# json does not recognize numpy, convert to python int
-    # print (features_heatmap_out)
-
-    # # TODO: refactor to write yaml instead of json
-    # feature_subset_fpath = config["feature_subset_fpath"]
-    # with open(feature_subset_fpath, 'w') as json_file:
-    #     json.dump(features_heatmap_out, json_file)
-        
+    plt.close()
+    logging.info(f"Saved heatmap of reduced feature subset to: {figpath}\n")        
 
 if __name__ == "__main__":
     main()

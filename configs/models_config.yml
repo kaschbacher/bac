@@ -1,0 +1,8 @@
+boosting_params:
+  silent: False, 
+  class_weight: "balanced"
+  n_estimators: 30
+    
+fit_params:
+  eval_metric: "auc"
+  early_stopping_rounds: 5
