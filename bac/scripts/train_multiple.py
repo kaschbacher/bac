@@ -46,7 +46,8 @@ def main(
     io_config = "/mnt/configs/io.yml", 
     features_config = "/mnt/configs/features.yml",
     models_config = "/mnt/configs/train.yml",
-    feature_subset = True):
+    feature_subset = True
+    ):
     """ Main function that loads config, sets up logging, and trains a model
 
     Args:
@@ -55,21 +56,25 @@ def main(
         models_config (str, optional): yaml config for LGBM boosting and training params
         feature_subset: load only the reduced set of features_to_keep in features.yml
     """
-    # Load IO Paths Config
+    # Load IO Paths
     logger.info(f"Loading config {io_config}")
-    io_config = parse_config(io_config)
-    logger.info(f"Config: \n{io_config}")
+    io_cfg = parse_config(io_config)
+    logger.info(f"Config: \n{io_cfg}")
     
     # Load Feature & Model Configs
-    features_config = parse_config(features_config)
-    models_config = parse_config(models_config)
+    features_cfg = parse_config(features_config)
+    models_cfg = parse_config(models_config)
+    
+    # Set Model Parameters
+    boosting_params = models_cfg["boosting_params"]
+    model_folder = io_cfg['models_folder']
 
     # Load Data
     columns = None
     if feature_subset:
-        columns = parse_config(features_config)["features_to_keep"]
-    datasets = config["partitions_filenames"][:2]# train & dev only
-    dfs_map = load_data_partitions(io_config["partitions_folder"], datasets, columns)
+        columns = features_cfg["features_to_keep"]
+    datasets = io_cfg["partitions_filenames"][:2]# train & dev only
+    dfs_map = load_data_partitions(io_cfg["partitions_folder"], datasets, columns)
     X_train, y_train = split_data(dfs_map['train']) 
     X_dev, y_dev = split_data(dfs_map['dev'])
     # TODO: Implement get n-unique users from dfs_map partitions   
@@ -78,15 +83,13 @@ def main(
     # Fill Missing Data
     [X_train, X_dev] = fill_missing_data([X_train, X_dev], missing_value = -999)
     
-    # Load Model Parameters
-    boosting_params = models_config["boosting_params"]
-    model_folder = io_config['models_folder']
     
     # Train Multiple Models, defined by ModelSchemas Class
-    ms = ModelSchemas(X_train.columns, features_config)
+    ms = ModelSchemas(X_train.columns, features_cfg)
     
     for model_schema in ms.schemas:
         logging.info(f"\nBuilding model {model_schema['name']}...")
+        
         # Output Filename
         model_fname = f"lgbm_model_{model_schema['name']}_{dt.date.today()}"
         
@@ -96,22 +99,27 @@ def main(
         X = X_train[subset_columns]
         y = y_train
         
-        # Train Model
-        if target == y_train.name:
-            fit_params = models_config["fit_params"]
-            fit_params["eval_set"] = [(X_dev[subset_columns], y_dev)]
-            clf = LightGBMModel(**boosting_params)
+        # Train & Save Models
+        fit_params = models_cfg["fit_params"]
+        fit_params["eval_set"] = [(X, y), (X_dev[subset_columns], y_dev)]
+        fit_params["eval_names"] = ['train', 'dev']
         
+        if target == y_train.name:
+            clf = LightGBMModel(**boosting_params)
         elif target == 'majority_class':
-            fit_params = {"strategy": "constant", "constant": 1}
-            clf = DummyModel(**fit_params)
-            
+            dummy_params = {"strategy": "stratified"}
+            clf = DummyModel(**dummy_params)
         else:
             raise ValueError(f"{target} specified in ModelSchemas \
                 does not match y_train: {y_train.name}")
         
         clf.do_fit(X, y, **fit_params)
         clf.save_training_info(X)
+        # DummyClassifier doesn't automatically log the aucs
+        if target == 'majority_class':
+            logging.info(f'Train auc: {clf.get_auc(X, y)}.') 
+            logging.info(f'Eval auc: {clf.get_auc(X_dev[subset_columns], y_dev)}')
+        
         clf.do_save(model_folder, model_fname)
     
 if __name__ == "__main__":

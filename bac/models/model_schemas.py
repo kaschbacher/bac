@@ -6,7 +6,7 @@ class ModelSchemas():
     Intended to be used by train_multiple.py
     """
     
-    def __init__(self, X_columns: Sequence[str], feature_config: dict):
+    def __init__(self, X_columns: Sequence[str], features_config: dict):
         """Builds "schemas" a list of dictionaries
 
         Args:
@@ -14,7 +14,7 @@ class ModelSchemas():
             feature_config (dict): config parsed from features.yml
         """
         self.features = X_columns
-        self.config = feature_config
+        self.config = features_config
         self._define_schemas()
         
 
@@ -27,6 +27,12 @@ class ModelSchemas():
             self (ModelSelectionSchemas): object holds base feature set, features.yml, schemas
         """
         schemas = []
+        
+        model = {}
+        model['name'] = 'all_w_majority_class'
+        model['features'] = self.features
+        model['target'] = 'majority_class'
+        schemas.append(model)
         
         model = {}
         model['name'] = 'all'
@@ -52,12 +58,6 @@ class ModelSchemas():
         model['name'] = 'bac_estimate'
         model['features'] = bac_estimate
         model['target'] = 'bac_clinical'
-        schemas.append(model)
-        
-        model = {}
-        model['name'] = 'all_w_majority_class'
-        model['features'] = self.features
-        model['target'] = 'majority_class'
         schemas.append(model)
         
         self.schemas = schemas
