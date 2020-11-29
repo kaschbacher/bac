@@ -4,18 +4,21 @@ import joblib
 import logging
 import sys
 
+from bac.models.model_base import ModelBase
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
-class LightGBMModel():
+class LightGBMModel(ModelBase):
     
     def __init__(self, **kwargs):
+        super().__init__()
         self.model = LGBMClassifier(**kwargs)
-        self.fitted = False
-        self.columns = []
         self.boosting_params = kwargs
         self.fit_args = {}
+        self.columns = None
+        self.n_userdays = None
         self.best_n_estimators = None
         
 
@@ -59,17 +62,5 @@ class LightGBMModel():
         if len(scores.shape) == 2:
             scores = scores[:, 1]
         return pd.Series(scores, index=X_eval.index)
-    
-    
-    def do_save(self, model_folder: str, model_name: str):
-        """Save a serialized model to a given folder
-
-        Args:
-            model_folder: location on the docker volume to save
-            model_name: name of the serialized model file
-        """
-        model_outpath = f"{model_folder}/{model_name}.joblib"
-        joblib.dump(self, model_outpath)
-        logger.info(f"Completed. Model saved to docker: {model_outpath}\n")
 
     

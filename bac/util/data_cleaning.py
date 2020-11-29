@@ -10,6 +10,7 @@ def split_data(data: pd.DataFrame) -> Sequence[pd.DataFrame]:
     """
     X = data.iloc[:, 2:]
     y = data["bac_clinical"]
+    y.name = "bac_clinical"
     return X, y
 
 

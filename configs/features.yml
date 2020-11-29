@@ -14,6 +14,7 @@ bac_measures:
   - 'n_adj_bac'
 
 
+# bac_clinical and user_id must be the first two cols in that order
 features_to_keep: ['bac_clinical', 'user_id', 
   'bac_guess', 
   'bac_level_verified_sum', 
