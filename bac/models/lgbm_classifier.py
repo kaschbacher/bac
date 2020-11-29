@@ -18,7 +18,7 @@ class LightGBMModel():
         self.fit_args = {}
         self.best_n_estimators = None
         
-        
+
     def do_fit(self, X_train: pd.DataFrame, y_train: pd.Series, **fit_args) -> None:
         """Train model. Extends model_base abstract class
 
@@ -30,15 +30,25 @@ class LightGBMModel():
         """
         logging.info("\nTraining LGBM...")
         logger.info(f"Boosting Params: \n{self.boosting_params}")
-        logger.info(f"LGBM Fit Params: \n{fit_args}\n")
+        #logger.info(f"LGBM Fit Params: \n{fit_args}\n")
         
         self.model.fit(X_train.values, y_train.values.ravel(), **fit_args)
         self.fitted = True
         self.fit_args = fit_args
+
+    
+    def save_training_info(self, X_train: pd.DataFrame):
+        """Save columns used in training as instance variables
+
+        Args:
+            X_train (pd.DataFrame): feature set for training
+        """
+        assert self.fitted
         self.columns = X_train.columns.tolist()
+        self.n_userdays = len(X_train)
         self.best_n_estimators = self.model.best_iteration_
         logging.info(f"\nBest Model Iteration: {self.best_n_estimators}\n")
-
+    
     
     def do_predict(self, X_eval: pd.DataFrame) -> pd.Series:
         """ 
@@ -59,7 +69,7 @@ class LightGBMModel():
             model_name: name of the serialized model file
         """
         model_outpath = f"{model_folder}/{model_name}.joblib"
-        joblib.dump(self.model, model_outpath)
+        joblib.dump(self, model_outpath)
         logger.info(f"Completed. Model saved to docker: {model_outpath}\n")
 
     

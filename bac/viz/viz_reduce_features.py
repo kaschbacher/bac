@@ -7,6 +7,7 @@ import os
 from typing import Sequence, List
 import sys
 import logging
+import click
 
 from bac.util.io import load_data_partitions, load_feature_labels
 from bac.util.config import parse_config
@@ -39,13 +40,19 @@ def make_heat_map(data: np.ndarray, names: List[str], feature_labels: List[str])
     fig = plt.gcf()
     return fig
 
-def main(io_config = "/mnt/configs/io_config.yml",
-         features_config = "/mnt/configs/features_config.yml"):
+@click.command()
+@click.argument(
+    "io_config", type=click.Path(exists=True), default="/mnt/configs/io.yml",
+    )
+@click.argument(
+    "features_config", type=click.Path(exists=True), default="/mnt/configs/drop_features.yml"
+)
+def main(io_config = "/mnt/configs/io.yml",
+         features_config = "/mnt/configs/drop_features.yml"):
 
     # Load config for file-io
     config = parse_config(io_config)
     feature_labels = load_feature_labels(config["feature_labels_fpath"])
-    idx_uid = 1# column index of user id in bac feature file
     
     # Load config for feature subsetting
     features_config = parse_config(features_config)
@@ -58,7 +65,7 @@ def main(io_config = "/mnt/configs/io_config.yml",
 
     # Feature correlation heat map: All Features
     train = dfs_map["train"]
-    names = train.columns[idx_uid+1:]
+    names = train.columns[2:]# assumes first two columns are not features
     fig = make_heat_map(train, names, feature_labels)
 
     fig_folder = config["figures_fpath"]
@@ -67,7 +74,7 @@ def main(io_config = "/mnt/configs/io_config.yml",
     plt.close()
     logging.info(f"Saved heatmap of all features to: {figpath}")
 
-    # Reduce the Feature Set
+    # Reduce the Feature Set & Resave
     keep_names = [name for name in names if name not in features_to_drop]
 
     # Replot Feature Correlations in Reduced Feature Set

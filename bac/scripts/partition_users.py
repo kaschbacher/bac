@@ -2,20 +2,23 @@ import pandas as pd
 import numpy as np
 import os
 from typing import Sequence, List
+import click
 
-from bac.util.io import (load_data)
+from bac.util.io import load_data
+from bac.util.config import parse_config
 
+# Example script CLI:
+# python bac/scripts/partition_users.py --feature_subset=True
 
 # Define train-val-test split
 TRAIN_P, DEV_P = .70, .10
 SPLIT = [TRAIN_P, DEV_P, 1 - (TRAIN_P + DEV_P)]
 
 SEED = 3
-# BACTRACK_FILEPATH = '/mnt/data/bac_2019-10-12.parquet'
-# OUTPUT_FOLDER = '/mnt/data'
+
 BACTRACK_FILEPATH = '/mnt/data/bac_2019-10-12.parquet'
 OUTPUT_FOLDER = '/volume/data'
-
+# OUTPUT_FOLDER = '/mnt/data'
 
 def shuffle_uids(uuids: np.ndarray) -> Sequence[int]:
     """Shuffle unique users for partitioning to train-val-test
@@ -34,7 +37,7 @@ def shuffle_uids(uuids: np.ndarray) -> Sequence[int]:
 
 def qa_user_partitions(train: np.ndarray, dev: np.ndarray, test: np.ndarray): 
     """QA user-randomization. Ensure no users are in more than one array"""
-    # Could condense, but this is somewhat easier to read
+     # Could condense, but this is somewhat easier to read
     if np.intersect1d(dev, train, assume_unique=True).size>0:  
         print ('Problem with randomization: users in dev and train overlap')
     elif np.intersect1d(dev, test, assume_unique=True).size>0:
@@ -65,12 +68,24 @@ def partition_users(uuids: np.ndarray, split: List) -> dict:
     user_id_partitions = {'train': train_ui, 'dev': dev_ui, 'test': test_ui}
     return user_id_partitions
 
-
-def main():
+@click.command()
+@click.argument("feature_config", default='/mnt/configs/features.yml', type=click.Path(exists=True))
+@click.option("--feature_subset", default=False, type=bool, help="Drop features listed in the config")
+def main(feature_subset = False, feature_config = '/mnt/configs/features.yml'):
+    # If desired, limit feature_set
+    columns = None# Defaults to loading all features
+    save_suffix = ""
+    
+    if feature_subset:
+        config = parse_config(feature_config)
+        columns = config["features_to_keep"]
+        save_suffix = "_subset"
+    
     # Load Data
-    df = load_data(BACTRACK_FILEPATH)
+    df = load_data(BACTRACK_FILEPATH, columns=columns)
     names = df.columns.tolist()
     print(df.head(6))
+    print(names)
     
     # Randomize & partition unique users
     unique_uids = np.unique(df["user_id"].values)
@@ -86,7 +101,7 @@ def main():
         partition_df = df.query("user_id in @user_partition")
         
         # Save out
-        filename = os.path.join(OUTPUT_FOLDER, name+".parquet")
+        filename = os.path.join(OUTPUT_FOLDER, name + save_suffix + ".parquet")
         partition_df.to_parquet(filename, compression="snappy")
         final_shape -= partition_df.shape[0]
         print(f"Saved: {filename} with shape {partition_df.shape} and n-unique-users {partition_df.user_id.nunique()}")

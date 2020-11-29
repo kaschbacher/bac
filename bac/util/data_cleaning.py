@@ -1,27 +1,30 @@
 import pandas as pd
 from typing import Sequence
-
-def clean_data_partitions(dfs_map: dict) -> dict:
-    """No missing target data allowed."""
-    dfs_map_clean = {}
-    for key, df in dfs_map.items():
-        df = df.dropna(subset=df.columns[0])
-        dfs_map_clean[key] = df
-    return dfs_map_clean
+import logging
 
 
-def assign_train_dev(dfs_map: dict) -> Sequence[pd.DataFrame]:
+def split_data(data: pd.DataFrame) -> Sequence[pd.DataFrame]:
     """
-    Reformat dictionary into X_train, y_train, etc
+    Reformat pd.DataFrame into X_train, y_train, etc
     -- excluding the user_id in column[1].
     """
-    train = dfs_map["train"]
-    dev = dfs_map["dev"]
-    X_train = train.iloc[:, 2:]
-    y_train = train["bac_clinical"]
-    X_dev = dev.iloc[:, 2:]
-    y_dev = dev["bac_clinical"]
-    return X_train, y_train, X_dev, y_dev
+    X = data.iloc[:, 2:]
+    y = data["bac_clinical"]
+    return X, y
+
+
+# def assign_train_dev(dfs_map: dict) -> Sequence[pd.DataFrame]:
+#     """
+#     Reformat dictionary into X_train, y_train, etc
+#     -- excluding the user_id in column[1].
+#     """
+#     train = dfs_map["train"]
+#     dev = dfs_map["dev"]
+#     X_train = train.iloc[:, 2:]
+#     y_train = train["bac_clinical"]
+#     X_dev = dev.iloc[:, 2:]
+#     y_dev = dev["bac_clinical"]
+#     return X_train, y_train, X_dev, y_dev
 
 
 def limit_features(
@@ -67,4 +70,6 @@ def fill_missing_data(
             columns = df.columns
         df[columns] = df[columns].fillna(value = missing_value)
         clean_dfs.append(df)
+        
+    logging.info(f"Missing data filled with the value={missing_value}")
     return clean_dfs

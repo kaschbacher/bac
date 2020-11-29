@@ -1,0 +1,65 @@
+bac_estimate: 
+  - 'bac_guess'
+
+bac_measures:
+  - 'bac_level_verified_sum'
+  - 'n_prior_bacs'
+  - 'bac_cumulative_avg'
+  - 'bac_cumulative_min'
+  - 'bac_cumulative_max'
+  - 'bac_avg_lag1'
+  - 'bac_avg_lag2'
+  - 'bac_last3'
+  - 'state_bac_avg'
+  - 'n_adj_bac'
+
+
+features_to_keep: ['bac_clinical', 'user_id', 
+  'bac_guess', 
+  'bac_level_verified_sum', 
+  'days_range_engaged', 'n_days_engaged', 
+  'n_prior_bacs', 
+  'monitor', 'deep_engagement', 
+  'bac_cumulative_avg', 'bac_cumulative_min', 'bac_cumulative_max', 
+  'bac_avg_lag1', 'bac_avg_lag2', 'bac_last3', 
+  'dow', 'hour_local', 'month', 'year', 
+  'distance_km', 'dist_cumulative_avg', 
+  'dist_cumulative_max', 'gmt_diff_min', 'distance_per_hour', 
+  'pct_zip_urban', 
+  'elevation', 
+  'state_code_le', 'country_le', 
+  'game_le', 'state_game_played_le', 'in_winning_state', 'in_losing_state', 
+  'holiday_le', 'is_holiday', 
+  'state_bac_avg', 'n_users_per_state', 
+  'mv_death_rate_2014', 'n_adj_bac', 
+  'avg_heavy_drinking', 'avg_heavy_drinking_male', 'avg_heavy_drinking_female', 
+  'official_percent_estimate', 'difference_percent', 
+  'sales_tax_perc_2014', 'spirit_tax_per_gal_2014', 
+  'wine_tax_per_gal_2014', 'beer_tax_per_gal_2014', 
+  'episode']
+
+features_to_drop: ['guess_number',
+  'monitor2','monitor3',
+  'monitor_yesno','monitor_measure','monitor_transport',
+  'monitor_number','monitor_content',
+  'n_prior_zips', 
+  'note_length', 'has_note', 'drinks_count','photo_count',
+  'bac_cumulative_range',
+  'bac_last2','bac_last4','bac_last5', 
+  'bac_avg_lag3','bac_avg_lag4','bac_avg_lag5',
+  'dist_cumulative_range', 'dist_cumulative_min',
+  'mv_death_rate_2012', 
+  'pct_zip_rural', 'pop_zip_rural','pop_zip_all','pop_zip_urban',
+  'official_number_margin', 'official_number_estimate', 'official_percent_margin', 
+  'culture_id',
+  'spm_number_estimate', 'spm_number_margin', 'spm_percent_estimate', 'spm_percent_margin', 
+  'difference_number', 'statistically_significant_difference',
+  'avg_heavy_drinking_black_non_hispanic', 'avg_heavy_drinking_hispanic', 
+  'avg_heavy_drinking_multiracial_non_hispanic', 'avg_heavy_drinking_other_non_hispanic', 'avg_heavy_drinking_white_non_hispanic', 
+  'sqrt_n_users_per_state','sq_n_users_per_state', 'sq_n_users_by_bac', 
+  'n_adj_75q_bac','state_75q_bac_avg',
+  'loser_state_code_le','winner_state_code_le','is_game', 
+  'sales_tax_per_gal_2014', 'gas_tax_per_gal_2014', 'cig_tax_per_20pack_2014', 
+  'taxes']
+
+

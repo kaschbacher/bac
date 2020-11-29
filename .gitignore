@@ -33,6 +33,8 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
+# paths
+bac/util/server_to_local.sh 
 # Temp files
 *swp
 *swo
