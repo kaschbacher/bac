@@ -15,6 +15,7 @@ from bac.util.config import parse_config
 from bac.util.io import load_data_partitions, load_feature_labels, load_model
 from bac.util.data_cleaning import split_data, fill_missing_data
 from bac.models.model_schemas import ModelSchemas
+from bac.viz.viz_model_performance import plot_ROC_comparison
 from bac.features.feature_importances import compute_feature_importances
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,7 @@ def main(
     features_cfg = parse_config(features_config)
     eval_cfg = parse_config(eval_config)
     models_base_fpath = eval_cfg["models_fpath"]
+    figures_fpath = io_cfg["figures_fpath"]
     
     # Load Data, subset features
     columns = features_cfg["features_to_keep"]
@@ -112,6 +114,7 @@ def main(
 	# -- Build ModelSchemas -> use to Evaluate multiple trained models
     ms = ModelSchemas(X_test.columns, features_cfg)
     model_stats = {}
+    ys = []; probs=[]; plot_names=[]
 
     for model_schema in ms.schemas:
         X, y = get_model_features_target(model_schema, X_test, y_test)
@@ -128,22 +131,34 @@ def main(
         accuracy, roc_auc, avg_precision, y_pred = evaluate_model(y, y_prob)
         model_stats[model_name] = [accuracy, roc_auc, avg_precision, y_pred]
         
+        # Build the Confusion Matrix & Stats
         cnf_matrix = confusion_matrix(y, y_pred)
         logging.info(f"\nConfusion Matrix:\n{cnf_matrix}\n")
         extra_statistics(cnf_matrix)
         
-        # Classification Report
+        # Log Classification Report
         target_names = ['low BAC','high BAC']
         logging.info(classification_report(y, y_pred, target_names=target_names))
         
+        # TODO: Reformat and Test
         #plot_confusion_matrix(cnf_matrix, target_names, normalize=True)
         #fig.savefig('/'.join([FIGURE_FOLDER,'/cm/Normalized_Confusion_Matrix_BAC_Classification_{}.png'.format(TODAY)]), bbox_inches='tight')
-
+        
+        # Store kwargs for roc-comparison plot
+        if model_name != "majority_class":
+            ys.append(y)
+            probs.append(y_prob)
+            plot_names.append(model_schema["plot_name"])
+            
         # Plot Shap Values for Best Model
         if model_name == "all":
             base_folder = Path(io_cfg["figures_fpath"])
             output_folder = base_folder / 'shap/'
             compute_feature_importances(model.model, X, output_folder)
+    
+    # Plot final roc-comparison plot (w-o majority class)
+    plot_ROC_comparison(ys, probs, plot_names, figures_fpath, save_plot=True)
+    logging.info(f"\nEvaluate.py Complete.")
 
 if __name__=="__main__":
     main()

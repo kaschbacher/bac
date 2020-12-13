@@ -32,7 +32,7 @@ def compute_shap_values(
     shap.summary_plot(shap_arr, X_explain, show=False)
     plt.gcf().set_size_inches(15, 8)
     plt.tight_layout()
-    plt.savefig(f"{output_folder}shap_importances.pdf", bbox_inches="tight")
+    plt.savefig(f"{output_folder}/shap_importances.pdf", bbox_inches="tight")
     plt.close()
     logging.info(f"SHAP value plots saved to {output_folder}")
         
@@ -60,7 +60,7 @@ def compute_permutation_importances(
     permutation.iloc[:n_feat_display].plot(kind="barh")
     plt.gcf().set_size_inches(15, 8)
     plt.tight_layout()
-    plt.savefig(f"{output_folder}permutation_importances.pdf", bbox_inches="tight")
+    plt.savefig(f"{output_folder}/permutation_importances.pdf", bbox_inches="tight")
     plt.close()
     logging.info(f"Feature permutation plots saved to {output_folder}\n")
         

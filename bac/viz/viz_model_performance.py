@@ -1,11 +1,17 @@
+from typing import Sequence
+import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
 import datetime as dt
-import os
+from pathlib import Path
+import logging
+import sys
 
-from sklearn.metrics import roc_auc_score, roc_curve, auc, \
-    accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import roc_curve, auc
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 FIGURE_PARAMS = {
@@ -20,7 +26,7 @@ FIGURE_PARAMS = {
 plt.rcParams.update(FIGURE_PARAMS)
 
 
-def get_output_filepath(output_folder: str, pre: str, fname: str='roc') -> output_fpath:
+def get_output_filepath(output_folder: str, pre: str, fname: str='roc') -> Path:
     """Creates a subfolder according to pre.
     Names file according to pre & date.
     Outputs a filepath to save a figure.
@@ -33,23 +39,30 @@ def get_output_filepath(output_folder: str, pre: str, fname: str='roc') -> outpu
     Returns:
         output_fpath: the full filepath to save
     """
-    output_folder = os.join.path(output_folder, pre)
-    if not os.path.exists(output_folder):
-        os.mkdir(output_folder)
+    output_folder = Path(output_folder) / pre
+    if not Path.exists(output_folder):
+        Path.mkdir(output_folder)
         
-    output_fname = f"{fname}_{dt.date.today()}.pdf"
-    output_fpath = os.join(output_folder, output_fname)
+    #output_fname = Path(f"{fname}_{dt.date.today()}.pdf")
+    output_fname = Path(f"{fname}.pdf")
+    output_fpath = output_folder / output_fname
     return output_fpath
     
     
-def plot_ROC(y_test: pd.Series, y_proba: pd.Series, output_folder: str):
-    
+def plot_ROC(
+    y_test: pd.Series, 
+    y_prob: pd.Series, 
+    model_name: str,
+    output_folder: str='/mnt/data/figures',
+    save_plot: bool=True):
+    """Plot one ROC curve"""
+    # Instantiate
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
 
     # Calculate x and y for ROC-curve
-    fpr, tpr, _ = roc_curve(y_test, y_proba)
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
     roc_auc = auc(fpr, tpr)
     #print (fpr.shape, tpr.shape, roc_auc)# DEBUG
 
@@ -65,39 +78,62 @@ def plot_ROC(y_test: pd.Series, y_proba: pd.Series, output_folder: str):
     #plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
     
-    output_fpath = get_output_filepath(output_folder, 'roc')
-    plt.savefig(output_fpath, bbox_inches='tight', dpi=300)
+    if len(output_folder)<1:
+        raise ValueError(f"Invalid output folder given to save ROC plot: {output_folder}.")
+    if save_plot:
+        output_fpath = str(get_output_filepath(output_folder, 'roc', 'roc_{model_name}'))
+        plt.savefig(output_fpath, bbox_inches='tight', dpi=300)
+        logging.info(f"Saving ROC-AUC Model Comparison Plot to:\n{output_fpath}")
     plt.show()
  
 
-def plot_ROC_comparison(y_true, y_prob, labels):
-    #y_test and y_prob will be lists of however many groups are in the comparison
-    plt.figure()
-    #https://matplotlib.org/3.1.0/tutorials/colors/colors.html
-    colors = ['indigo','darkgreen','goldenrod']
-    c = []# ensure that c is the list of colors that is the same length as y_test, i.e., as the number of models to be graphed
-    assert len(y_true)==len(y_prob)==len(labels)
-    for i in range(len(y_true)):
-        if i==0:
-           c.append(colors[0])
-        else:
-           c.append(colors[i%len(colors)])
+def plot_ROC_comparison(
+        y_true: Sequence[pd.Series], 
+        y_prob: Sequence[pd.Series], 
+        labels: Sequence[str],
+        output_folder: str='/mnt/data/figures',
+        save_plot: bool=True):
+    """Plot ROC Curves to compare multiple models.
 
+    Args:
+        y_true: List, observed y, len = number of models to compare
+        y_prob: List, predicted y probabilities, len = n-models
+        labels (Sequence[str]): List, plot-labels for each model
+        output_folder: str, output path to server to save the plot
+        save_plot: Optional boolean to save the plot
+    """
+    n_models = len(y_true)
+    assert len(y_true)==len(y_prob)==len(labels)
+    
+    #https://matplotlib.org/3.1.0/tutorials/colors/colors.html
+    c = ['indigo','darkgreen','goldenrod','darkblue','teal','purple']
+    # reformat so colors has the same length as y_test or n-models
+    colors = [c[i % len(c)] for i in range(n_models)]
+
+    plt.figure()
+    
     for y_t, y_p, color, label in zip(y_true, y_prob, c, labels):
         fpr, tpr, _ = roc_curve(y_t, y_p)
         roc_auc = auc(fpr, tpr)
         plt.plot(fpr, tpr, color=color, label='{} AUC: {:0.2f})'.format(label, roc_auc))
+    
     plt.plot([0, 1], [0, 1], color='grey', linestyle='--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel('1-Specificity')
     plt.ylabel('Sensitivity')
     plt.legend(loc="lower right")
-    plt.savefig('/'.join([FIGURE_FOLDER, 'roc/roc_comparison_{}.png'.format(TODAY)]), bbox_inches='tight', dpi=300)
+    
+    if len(output_folder)<1:
+        raise ValueError(f"Invalid output folder given to save ROC plot: {output_folder}.")
+    if save_plot:
+        output_fpath = str(get_output_filepath(output_folder, 'roc', 'roc_comparison'))
+        plt.savefig(output_fpath, bbox_inches='tight', dpi=300)
+        logging.info(f"Saving ROC-AUC Model Comparison Plot to:\n{output_fpath}")
     plt.show()
     
     
-    
+# TODO: Revise format to be consistent with above
 def plot_confusion_matrix(cm, classes, normalize=False, cmap=plt.cm.Blues):
     """
     This function prints and plots the confusion matrix.

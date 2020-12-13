@@ -33,12 +33,14 @@ class ModelSchemas():
         model['name'] = 'all_w_majority_class'
         model['features'] = self.features
         model['target'] = 'majority_class'
+        model['plot_name'] = 'Majority Class'
         schemas.append(model)
         
         model = {}
         model['name'] = 'all'
         model['features'] = self.features
         model['target'] = 'bac_clinical'
+        model['plot_name'] = 'All Features'
         schemas.append(model)
         
         model = {}
@@ -46,6 +48,7 @@ class ModelSchemas():
         bac_estimate = self.config["bac_estimate"]
         model['features'] = self.features.difference(set(bac_estimate))
         model['target'] = 'bac_clinical'
+        model['plot_name'] = 'Remove BAC Estimate'
         schemas.append(model)
         
         model = {}
@@ -53,12 +56,14 @@ class ModelSchemas():
         bac_based_features = self.config["bac_measures"]
         model['features'] = self.features.difference(set(bac_based_features))
         model['target'] = 'bac_clinical'
+        model['plot_name'] = 'Remove BAC Features'
         schemas.append(model)
         
         model = {}
         model['name'] = 'bac_estimate'
         model['features'] = bac_estimate
         model['target'] = 'bac_clinical'
+        model['plot_name'] = 'Only BAC Estimate'
         schemas.append(model)
         
         return schemas

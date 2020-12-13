@@ -16,10 +16,6 @@ from bac.util.config import parse_config
 from bac.util.io import load_data_partitions
 from bac.util.data_cleaning import limit_features, split_data, fill_missing_data
 
-# DEBUG
-from bac.features.feature_importances import compute_feature_importances
-#from bac.util.logging import setup_logging_env
-
 logger = logging.getLogger(__name__)
 
 
@@ -76,17 +72,12 @@ def main(
     # Predict
     logger.info("Predicting")
     scores = model.do_predict(X_eval)
+    
     # # TODO: Decide on an org system for experiments
     # # if exp folder doesn't exit, mkdir it
     # experiment_name = "testing_predict"
     # output_folder = f"/volume/data/{experiment_name}"
     # scores.to_parquet(f"{output_folder}/scores.parquet")
-    
-    # TODO: DELETE from predict.py eventually
-    # Plot Shap Values
-    base_folder = config["figures_fpath"]
-    output_folder = os.path.join(base_folder, 'shap/')
-    compute_feature_importances(model.model, X_eval, output_folder)
     
 
 if __name__ == "__main__":
