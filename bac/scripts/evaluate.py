@@ -116,6 +116,32 @@ class ModelEvaluator():
         logging.info(report)
 
 
+def build_table_1(model_metrics: OrderedDict, table_folder: str="/mnt/data/tables") -> pd.DataFrame:
+    """Builds and Saves Table 1: Summary of Eval Metrics for all Models
+
+    Args:
+        model_metrics (OrderedDict): key is model_name, value is metrics 
+        table_folder (str): local filepath outside docker to write csv
+
+    Returns:
+        pd.DataFrame: Organized as a DataFrame to write to csv
+    """
+    # Build Table 1
+    model_metrics_df = pd.DataFrame.from_dict(model_metrics, orient='index').round(decimals=4)
+    model_metrics_df = model_metrics_df.reset_index().rename(columns={'index':'model_name'})
+    model_metrics_df = model_metrics_df.sort_values(by='roc_auc', ascending=False)
+    logging.info(f"Table 1:  Model Performance Metrics")
+    logging.info(model_metrics_df.head(10))
+    
+    # Save as csv
+    table_folder = Path(table_folder)
+    if not table_folder.exists:
+        Path.mkdir(table_folder)
+    table_fpath = str(table_folder / 'table1_model_performance.csv')
+    model_metrics_df.to_csv(table_fpath, encoding='utf-8', index=False)
+    return model_metrics_df
+
+
 @click.command()
 @click.argument(
     "io_config", type=click.Path(exists=True), default="/mnt/configs/io.yml",
@@ -200,13 +226,7 @@ def main(
     
     
     # Build & Save Table 1
-    model_metrics_df = pd.DataFrame.from_dict(model_metrics, orient='index').round(decimals=4)
-    model_metrics_df = model_metrics_df.reset_index().rename(columns={'index':'model_name'})
-    model_metrics_df = model_metrics_df.sort_values(by='roc_auc', ascending=False)
-    print(model_metrics_df.head(10))
-    
-    table_fpath = '/mnt/data/tables/table1_model_performance.csv'
-    model_metrics_df.to_csv(table_fpath, encoding='utf-8', index=False)
+    model_metrics_df = build_table_1(model_metrics)
     
     # TODO: Ordered dict for ys, probs, plot_names, model_names
     # TODO: provide the dict as a single arg to plot + plot_order.
