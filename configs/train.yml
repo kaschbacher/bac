@@ -1,3 +1,4 @@
+# Referred to as models_config in train.py
 boosting_params:
   silent: False, 
   class_weight: "balanced"

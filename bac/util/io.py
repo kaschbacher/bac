@@ -1,9 +1,15 @@
 import pandas as pd
 import os
-from typing import Sequence, List
+from typing import Sequence, List, Union
 import json
 import sys
 import logging
+import joblib
+from pathlib import Path
+
+
+from bac.models.lgbm_classifier import LightGBMModel
+from bac.models.dummy_classifier import DummyModel
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -28,6 +34,7 @@ def load_data(filepath: str, columns: Sequence[str]=None) -> pd.DataFrame:
     assert df.columns[1]=='user_id'
     
     return df
+
 
 def load_data_partitions(
     folder: str, 
@@ -56,22 +63,27 @@ def load_data_partitions(
             logging.info(f"DF {name} loaded with shape: {df.shape}")
     return dfs_map
 
+
 def load_feature_labels(feature_label_fpath: str):
     """Read in feature labels from external json"""
     with open(feature_label_fpath, 'r') as json_f:
         return json.load(json_f)
     
-# def save_data_partitions(dfs_map: dict, keep_cols: Sequence[str], data_folder: str):
-#     """Save the partitions with the smaller feature subset as parquet
+    
+def load_model(model_fpath: str) -> Union[LightGBMModel, DummyModel]:
+    """Load a saved serialized model object
 
-#     Args:
-#         dfs_map (dict): maps the filename ("train.parquet") to a pd.DataFrame
-#         keep_cols (Sequence[str]): List of features columns to keep
-#         -- Assume this does NOT include the target and user_id cols,
-#         -- which we do want to save also
-#         data_folder (str): location to save parquets to
-#     """
-#     for filename, df in dfs_map.items():
-#         pass
-#     # TODO: Decide if I need this
-#     # probably partition_users.py should be revamped
+    Args:
+        model_fpath (str): local filepath to model object in docker volume
+        -- '/volume/data/models/lgbm_model_{model_name}.joblib'
+
+    Returns:
+        Union[LightGBMModel, DummyModel]: returns a model obj
+    """
+    model_fpath = Path(model_fpath)
+    if model_fpath.exists():
+        logging.info(f"Loading model obj: {model_fpath}...")
+        model = joblib.load(model_fpath)
+        return model
+    else:
+        raise ValueError(f"Filepath {model_fpath} does not exist.")

@@ -91,7 +91,8 @@ def main(
         logging.info(f"\nBuilding model {model_schema['name']}...")
         
         # Output Filename
-        model_fname = f"lgbm_model_{model_schema['name']}_{dt.date.today()}"
+        #model_fname = f"lgbm_model_{model_schema['name']}_{dt.date.today()}"
+        model_fname = f"lgbm_model_{model_schema['name']}"
         
         # Set X and y
         subset_columns = model_schema['features']

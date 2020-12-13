@@ -1,0 +1,3 @@
+# Evaluate performance on multiple models simultaneously
+
+models_fpath: '/volume/data/models/lgbm_model_{model_name}.joblib'

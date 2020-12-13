@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 import datetime as dt
 import shap
-import os
+from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator
 
@@ -62,7 +62,7 @@ def compute_permutation_importances(
     plt.tight_layout()
     plt.savefig(f"{output_folder}permutation_importances.pdf", bbox_inches="tight")
     plt.close()
-    logging.info(f"Feature permutation plots saved to {output_folder}")
+    logging.info(f"Feature permutation plots saved to {output_folder}\n")
         
         
 def compute_feature_importances(
@@ -76,9 +76,10 @@ def compute_feature_importances(
         figures_folder: local path to save plots and parquets
         -- If directory given, include "/" at end.
     """
-    if not os.path.exists(figures_folder):
+    figures_folder = Path(figures_folder)
+    if not Path.exists(figures_folder):
         logging.info(f"Creating figures folder: {figures_folder}")
-        os.mkdir(figures_folder)
+        Path.mkdir(figures_folder)
     try:
         compute_shap_values(sklearn_model, X_explain, figures_folder)
     except Exception as E:

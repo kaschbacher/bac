@@ -12,6 +12,8 @@ bac_measures:
   - 'bac_last3'
   - 'state_bac_avg'
   - 'n_adj_bac'
+  - 'episode'
+  - 'gmt_diff_min'
 
 
 # bac_clinical and user_id must be the first two cols in that order

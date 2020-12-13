@@ -12,10 +12,11 @@ class ModelSchemas():
         Args:
             X_columns (Sequence[str]): the columns of X_train
             feature_config (dict): config parsed from features.yml
+            schemas (List[dict]): a list of model schemas
         """
         self.features = X_columns
         self.config = features_config
-        self._define_schemas()
+        self.schemas = self._define_schemas()
         
 
     def _define_schemas(self):
@@ -60,5 +61,5 @@ class ModelSchemas():
         model['target'] = 'bac_clinical'
         schemas.append(model)
         
-        self.schemas = schemas
+        return schemas
         
