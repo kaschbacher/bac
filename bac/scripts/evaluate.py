@@ -87,8 +87,8 @@ class ModelEvaluator():
         assert self.y_true.size>0
         assert self.y_prob.size == self.y_true.size
         
-        self.metrics['accuracy'] = accuracy_score(self.y_true, self.y_pred)
         self.metrics['roc_auc'] = roc_auc_score(self.y_true, self.y_prob, average='micro', max_fpr=None) 
+        self.metrics['accuracy'] = accuracy_score(self.y_true, self.y_pred)
         self.metrics['f1_score'] = f1_score(self.y_true, self.y_pred, average='micro')
 
 
@@ -117,7 +117,8 @@ class ModelEvaluator():
 
 
 def build_table_1(model_metrics: OrderedDict, table_folder: str="/mnt/data/tables") -> pd.DataFrame:
-    """Builds and Saves Table 1: Summary of Eval Metrics for all Models
+    """Builds and Saves Table 1: Summary of Eval Metrics for all Models,
+    as defined by ModelSchemas class
 
     Args:
         model_metrics (OrderedDict): key is model_name, value is metrics 
@@ -189,7 +190,7 @@ def main(
     # -- Plot ROC Comparison Figures
     ms = ModelSchemas(X_test.columns, features_cfg)# Multiple models
     model_metrics = {}# Table 1
-    ys = []; probs=[]; plot_names=[]# ROC Figure
+    roc_plot = {}# ROC Figure
 
     for model_schema in ms.schemas:
         X, y = get_model_features_target(model_schema, X_test, y_test)
@@ -214,9 +215,11 @@ def main(
         
         # Store kwargs for roc-comparison plot
         if model_name != "majority_class":
-            ys.append(y)
-            probs.append(y_prob)
-            plot_names.append(model_schema["plot_name"])
+            roc_plot[model_name] = {
+                "model_label": model_schema["plot_name"],
+                "y_true": y,
+                "y_prob": y_prob
+            }
             
         # # Plot Shap Values for Best Model
         # if model_name == "all":
@@ -233,9 +236,8 @@ def main(
     
     # # Plot final roc-comparison plot (w-o majority class)
     plot_order = model_metrics_df["model_name"].tolist()
-    logging.info(plot_order)
-    # plot_ROC_comparison(ys, probs, plot_names, figures_fpath, save_plot=True)
-    # logging.info(f"\nEvaluate.py Complete.")
+    plot_ROC_comparison(roc_plot, plot_order, figures_fpath, save_plot=True)
+    logging.info(f"\nEvaluate.py Complete.")
 
 if __name__=="__main__":
     main()

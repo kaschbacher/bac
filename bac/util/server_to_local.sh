@@ -21,5 +21,12 @@ scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL
 MNT="/media/TisonRaid01/Data_Backup/general_nas/kirstin/bac_repo/bac"
 SERVER=$MNT"/data/figures/shap/shap_importances.pdf"
 LOCAL="/Users/KAschbacher/desktop/eheart/bac_review/figures/shap"
+scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL
 
+
+
+# Permutation Importances
+MNT="/media/TisonRaid01/Data_Backup/general_nas/kirstin/bac_repo/bac"
+SERVER=$MNT"/data/figures/shap/permutation_importances.pdf"
+LOCAL="/Users/KAschbacher/desktop/eheart/bac_review/figures/shap"
 scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL

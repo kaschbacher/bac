@@ -88,9 +88,11 @@ def plot_ROC(
  
 
 def plot_ROC_comparison(
-        y_true: Sequence[pd.Series], 
-        y_prob: Sequence[pd.Series], 
-        labels: Sequence[str],
+        # y_true: Sequence[pd.Series], 
+        # y_prob: Sequence[pd.Series], 
+        # labels: dict,
+        roc_plot: dict,
+        plot_order: Sequence[str],
         output_folder: str='/mnt/data/figures',
         save_plot: bool=True):
     """Plot ROC Curves to compare multiple models.
@@ -99,35 +101,40 @@ def plot_ROC_comparison(
         y_true: List, observed y, len = number of models to compare
         y_prob: List, predicted y probabilities, len = n-models
         labels (Sequence[str]): List, plot-labels for each model
+        plot_order: model names (from ModelSchemas class), sorted by AUC
         output_folder: str, output path to server to save the plot
         save_plot: Optional boolean to save the plot
     """
-    n_models = len(y_true)
-    assert len(y_true)==len(y_prob)==len(labels)
+    n_models = len(roc_plot)
     
     #https://matplotlib.org/3.1.0/tutorials/colors/colors.html
     c = ['indigo', 'darkgreen', 'goldenrod', 'darkblue', 'teal', 'purple']
     # reformat so colors has the same length as y_test or n-models
     colors = [c[i % len(c)] for i in range(n_models)]
-    
-    # Sort by AUC
-    auc_df = pd.DataFrame([y_true, y_prob, labels])
 
     plt.figure()
     
-    for y_t, y_p, color, label in zip(y_true, y_prob, colors, labels):
-        fpr, tpr, _ = roc_curve(y_t, y_p)
+    for i, model_name in enumerate(plot_order):
+        y_true = roc_plot[model_name]["y_true"]
+        y_prob = roc_plot[model_name]["y_prob"]
+        model_label = roc_plot[model_name]['model_label']
+        fpr, tpr, _ = roc_curve(y_true, y_prob)
         roc_auc = auc(fpr, tpr)
-        plt.plot(fpr, tpr, color=color, label='{} AUC: {:0.2f})'.format(label, roc_auc))
+        plt.plot(fpr, tpr, color=colors[i], label='{} AUC: {:0.2f})'.format(model_label, roc_auc))
+    
+    # for y_t, y_p, color, label in zip(y_true, y_prob, colors, labels):
+    #     fpr, tpr, _ = roc_curve(y_t, y_p)
+    #     roc_auc = auc(fpr, tpr)
+    #     plt.plot(fpr, tpr, color=color, label='{} AUC: {:0.2f})'.format(label, roc_auc))
     
     plt.plot([0, 1], [0, 1], color='grey', linestyle='--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel('1-Specificity')
     plt.ylabel('Sensitivity')
-    #plt.legend(loc="lower right")
     plt.legend(bbox_to_anchor=(1.1, .5), loc='center left', ncol=1)
     
+    # Save Plot
     if len(output_folder)<1:
         raise ValueError(f"Invalid output folder given to save ROC plot: {output_folder}.")
     if save_plot:
