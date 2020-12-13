@@ -209,11 +209,7 @@ def main(
         target_names = ['low BAC','high BAC']
         evaluator.log_classification_report(target_names)
         
-        # TODO: Add to Eval Class, Reformat plotting function, and Test
-        #plot_confusion_matrix(cnf_matrix, target_names, normalize=True)
-        #fig.savefig('/'.join([FIGURE_FOLDER,'/cm/Normalized_Confusion_Matrix_BAC_Classification_{}.png'.format(TODAY)]), bbox_inches='tight')
-        
-        # Store kwargs for roc-comparison plot
+        # Store for roc-comparison plot
         if model_name != "majority_class":
             roc_plot[model_name] = {
                 "model_label": model_schema["plot_name"],
@@ -231,12 +227,10 @@ def main(
     # Build & Save Table 1
     model_metrics_df = build_table_1(model_metrics)
     
-    # TODO: Ordered dict for ys, probs, plot_names, model_names
-    # TODO: provide the dict as a single arg to plot + plot_order.
-    
-    # # Plot final roc-comparison plot (w-o majority class)
+    # Plot ROC-comparison plot
     plot_order = model_metrics_df["model_name"].tolist()
     plot_ROC_comparison(roc_plot, plot_order, figures_fpath, save_plot=True)
+    
     logging.info(f"\nEvaluate.py Complete.")
 
 if __name__=="__main__":
