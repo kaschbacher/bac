@@ -24,9 +24,10 @@ LOCAL="/Users/KAschbacher/desktop/eheart/bac_review/figures/shap"
 scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL
 
 
-
 # Permutation Importances
 MNT="/media/TisonRaid01/Data_Backup/general_nas/kirstin/bac_repo/bac"
 SERVER=$MNT"/data/figures/shap/permutation_importances.pdf"
 LOCAL="/Users/KAschbacher/desktop/eheart/bac_review/figures/shap"
 scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL
+
+open figures/shap/permutation_importances.pdf

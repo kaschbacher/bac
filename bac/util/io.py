@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from typing import Sequence, List, Union
 import json
+import yaml
 import sys
 import logging
 import joblib
@@ -64,10 +65,33 @@ def load_data_partitions(
     return dfs_map
 
 
-def load_feature_labels(feature_label_fpath: str):
+def load_feature_labels(feature_label_fpath: str) -> dict:
     """Read in feature labels from external json"""
-    with open(feature_label_fpath, 'r') as json_f:
-        return json.load(json_f)
+    if Path(feature_label_fpath).exists():
+        with open(feature_label_fpath, 'r') as json_f:
+            feature_map = json.load(json_f)
+            return feature_map
+    else:
+        logging.info(f"{feature_label_fpath} is not a valid path.")
+        return None
+    
+    
+def write_feature_labels_as_yaml(feature_map: dict, feature_label_fpath: str):
+    """Helper function to take the feature_labels.json (read above),
+    and write it back out as a yaml, to be consistent with codebase.
+
+    Args:
+        feature_map (dict): a mapper from feature variable name to label
+        feature_label_fpath (str): a filepath to the feature_labels.json
+    """
+    feature_folder = Path(feature_label_fpath).parent
+    if feature_folder.exists():
+        new_feature_label_fpath = str(feature_folder / 'feature_labels.yml')
+        yml_file = open(new_feature_label_fpath, 'w+')
+        yaml.dump(feature_map, yml_file)
+        logging.info(f"Finished writing yaml to: {new_feature_label_fpath}.")
+    else:
+        logging.info(f"{feature_folder} is not a valid path.")
     
     
 def load_model(model_fpath: str) -> Union[LightGBMModel, DummyModel]:

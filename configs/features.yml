@@ -1,3 +1,5 @@
+# Top section is used to compare multiple models with different feature subsets
+
 bac_estimate: 
   - 'bac_guess'
 
@@ -66,3 +68,319 @@ features_to_drop: ['guess_number',
   'taxes']
 
 
+# This section provides labels and meta-data for graphing SHAP feature-explainer plots
+
+feature_labels:
+  avg_heavy_drinking:
+    cat: health
+    details: Prevalence of heavy drinking per state
+    label: Avg Heavy Drinking
+    source: Center for Disease Control, chronic disease indicators
+  avg_heavy_drinking_female:
+    cat: health
+    details: Prevalence of heavy drinking per state for females
+    label: Avg Heavy Drinking Female
+    source: Center for Disease Control, chronic disease indicators
+  avg_heavy_drinking_male:
+    cat: health
+    details: Prevalence of heavy drinking per state for males
+    label: Avg Heavy Drinking Male
+    source: Center for Disease Control, chronic disease indicators
+  bac_avg_lag1:
+    cat: behavioral
+    details: User's last BrAC measurement
+    label: Last BrAC
+    source: BACtrack smart-breathalyzer
+  bac_avg_lag2:
+    cat: behavioral
+    details: User's second to last BrAC measurement
+    label: BrAC 2-back
+    source: BACtrack smart-breathalyzer
+  bac_avg_lag3:
+    cat: behavioral
+    details: User's third to last BrAC measurement
+    label: BrAC 3-back
+    source: BACtrack smart-breathalyzer
+  bac_cumulative_avg:
+    cat: behavioral
+    details: Average BrAC of user's prior measurements
+    label: BrAC Avg
+    source: BACtrack smart-breathalyzer
+  bac_cumulative_max:
+    cat: behavioral
+    details: Maximum BrAC of user's prior measurements
+    label: BrAC Max
+    source: BACtrack smart-breathalyzer
+  bac_cumulative_min:
+    cat: behavioral
+    details: Minimum BrAC of user's prior measurements
+    label: BrAC Min
+    source: BACtrack smart-breathalyzer
+  bac_guess:
+    cat: behavioral
+    details: User-reported BrAC estimate, entered in the app during the time between 
+      activating the device and receiving the measured BrAC output
+    label: BrAC Estimate
+    source: BACtrack app
+  bac_last3:
+    cat: behavioral
+    details: Average of User's last 3 BrAC measures
+    label: Average of last 3 BrACs 
+    source: BACtrack smart-breathalyzer
+  bac_level_verified_sum:
+    cat: behavioral
+    details: User-reported verification that he/she followed the instructions to obtain /
+      a maximally accurate BrAC measurement
+    label: Verified
+    source: BACtrack app
+  beer_tax_per_gal_2014:
+    cat: socioeconomic
+    details: State taxes placed on beer
+    label: State Beer Tax/Gal
+    source: Tax Foundation
+  cig_tax_per_20pack_2014:
+    cat: socioeconomic
+    details: State taxes placed on cigarettes
+    label: State Cigarette Tax/Gal
+    source: Tax Foundation
+  country_le:
+    cat: geographic
+    details: Country
+    label: Country Code
+    source: BACtrack app
+  days_range_engaged:
+    cat: engagement
+    details: Number of days between a user's first and last BrAC measurement
+    label: Engagement Duration
+    source: BACtrack smart-breathalyzer
+  deep_engagement:
+    cat: engagement
+    details: App Engagement (recording notes, photos, or drink counts)
+    label: App Engagement (note, photo, drink counts)
+    source: BACtrack app
+  difference_percent:
+    cat: behavioral
+    details: The difference between the official estimated percentage of individuals
+      living in poverty per state and the supplemental figures, which integrate additional
+      home equity and childcare information
+    label: No. prior BrACs
+    source: United States Census Bureau
+  dist_cumulative_avg:
+    cat: geographic
+    details: Average distance (km) travelled between subsequent BrAC measurements (geolocation-based)
+    label: Avg Distance
+    source: BACtrack app
+  dist_cumulative_max:
+    cat: geographic
+    details: Maximum distance (km) travelled between subsequent BrAC measurements (geolocation-based)
+    label: Max Distance
+    source: BACtrack app
+  dist_cumulative_min:
+    cat: geographic
+    details: Minimum distance (km) travelled between subsequent BrAC measurements (geolocation-based)
+    label: Min Distance
+    source: BACtrack app
+  distance_km:
+    cat: geographic
+    details: Distance (km) travelled since the last BrAC measurement (geolocation-based)
+    label: Distance since Last BrAC
+    source: BACtrack app
+  distance_per_hour:
+    cat: geographic
+    details: Distance (km)/hours since the last BrAC measurement (geolocation/timestamp-based)
+    label: Distance/Hour
+    source: BACtrack app
+  dow:
+    cat: temporal
+    details: Day of Week (categorical)
+    label: Day of Week
+    source: BACtrack smart-breathalyzer
+  drinks_count:
+    cat: engagement
+    details: User-recorded number of drinks consumed
+    label: No. Drinks Logged
+    source: BACtrack app
+  elevation:
+    cat: geographic
+    details: Elevation (geolocation-based
+    label: Elevation
+    source: BACtrack app
+  episode:
+    cat: behavioral
+    details: "New self-monitoring episodes were quantified as a new BrAC measurement 
+      occurring 12 hours after the prior recording"
+    label: Self-Monitoring Episode
+    source: BACtrack smart-breathalyzer
+  game_le:
+    cat: temporal
+    details: Dates of the Superbowl, World Series and NBA Championship games
+    label: Game
+    source: BACtrack smart-breathalyzer
+  gas_tax_per_gal_2014:
+    cat: socioeconomic
+    details: State taxes placed on gas
+    label: State Gas Tax per Gal
+    source: Tax Foundation
+  gmt_diff_min:
+    cat: temporal
+    details: Minutes since prior BrAC measurement
+    label: Min Since Prior Measurment
+    source: BACtrack smart-breathalyzer
+  has_note:
+    cat: engagement
+    details: User-recorded free-form text notes (presence/absence)
+    label: App Note
+    source: BACtrack app
+  holiday_le:
+    cat: temporal
+    details: Dates of major bank holidays
+    label: Holiday
+    source: BACtrack smart-breathalyzer
+  hour_local:
+    cat: temporal
+    details: Hour of day during which BrAC measurement was taken (local time)
+    label: Hour of Day
+    source: BACtrack smart-breathalyzer
+  in_losing_state:
+    cat: geographic
+    details: BrAC measurement taken in losing state on game date (Superbowl, World Series
+      and NBA Championship)
+    label: 'Game: Losing State'
+    source: BACtrack app
+  in_winning_state:
+    cat: geographic
+    details: BrAC measurement taken in winning state on game date (Superbowl, World
+      Series and NBA Championship)
+    label: 'Game: Winning State'
+    source: BACtrack app
+  is_game:
+    cat: temporal
+    details: BrAC measurement taken on game date (Superbowl, World Series and NBA Championship)
+    label: Game (y/n)
+    source: BACtrack app
+  is_holiday:
+    cat: temporal
+    details: BrAC measurement taken on a major bank holiday
+    label: Holiday (y/n)
+    source: BACtrack app
+  monitor:
+    cat: engagement
+    details: NLP-derived user-recorded notes indicating self-monitoring of drink type,
+      count, or measured quantity
+    label: Self-Monitoring by Note
+    source: BACtrack app
+  monitor_content:
+    cat: engagement
+    details: NLP-derived user-recorded notes indicating self-monitoring of drink type
+    label: Self-Monitoring Content
+    source: BACtrack app
+  monitor_measure:
+    cat: engagement
+    details: NLP-derived user-recorded notes indicating self-monitoring of drink measurement
+      quantity (e.g., oz/pints)
+    label: Self-Monitoring Measurements
+    source: BACtrack app
+  monitor_number:
+    cat: engagement
+    details: NLP-derived user-recorded notes indicating self-monitoring of number of
+      drinks
+    label: Self-Monitoring No.
+    source: BACtrack app
+  month:
+    cat: temporal
+    details: Month of the year
+    label: Month of Year
+    source: BACtrack smart-breathalyzer
+  mv_death_rate_2014:
+    cat: health
+    details: "State-level impaired-driving death rates (per 100,000 population) for\
+      \ people killed in crashes involving a driver with a BrAC\u22650.08 g/dL"
+    label: Impaired Driving MVD
+    source: Centers for Disease Control and Prevention (CDC)
+  n_adj_bac:
+    cat: geographic
+    details: State BrAC average, adjusted for the number of observations per state
+    label: State BrAC Avg (N-Adj)
+    source: BACtrack smart-breathalyzer
+  n_days_engaged:
+    cat: engagement
+    details: The number of days on which a user measured his/her BrAC
+    label: Engagement Frequency
+    source: BACtrack smart-breathalyzer
+  n_prior_bacs:
+    cat: engagement
+    details: The number of prior BrAC measurements for a given user
+    label: Engagement Quantity
+    source: BACtrack smart-breathalyzer
+  n_users_per_state:
+    cat: geographic
+    details: The number of distinct device users per state
+    label: No. Users per State
+    source: BACtrack smart-breathalyzer
+  official_percent_estimate:
+    cat: socioeconomic
+    details: The official estimated percentage of individuals living in poverty, in
+      units of thousands, per state
+    label: '% in Poverty/State'
+    source: United States Census Bureau
+  pct_zip_urban:
+    cat: geographic
+    details: The percentage of each zip code defined as living in an urban area
+    label: '% of Zip Urban'
+    source: United States Census Bureau
+  photo_count:
+    cat: behavioral
+    details: Number of user-recorded photos in the app
+    label: No. App Photos
+    source: BACtrack app
+  pop_zip_urban:
+    cat: geographic
+    details: The estimated urban population of each zip code
+    label: Zip Urban Population
+    source: United States Census Bureau
+  sales_tax_perc_2014:
+    cat: socioeconomic
+    details: State sales taxes rates
+    label: State Sales Tax/Gal
+    source: Tax Foundation
+  spirit_tax_per_gal_2014:
+    cat: socioeconomic
+    details: State taxes placed on spirits
+    label: State Spirit Tax/Gal
+    source: Tax Foundation
+  state_bac_avg:
+    cat: geographic
+    details: Average BrAC level by state
+    label: State BrAC Avg
+    source: BACtrack smart-breathalyzer
+  state_code_le:
+    cat: geographic
+    details: US state
+    label: State Code
+    source: BACtrack app
+  state_game_played_le:
+    cat: geographic
+    details: US State where game was played
+    label: State of Game
+    source: User geolocation/Manual Entry of Games
+  taxes:
+    cat: socioeconomic
+    details: State Taxes (spirits, gas, sales)
+    label: State Taxes (spirits, gas, sales)
+    source: Tax Foundation
+  wine_tax_per_gal_2014:
+    cat: socioeconomic
+    details: State taxes on wine
+    label: State Wine Tax/Gal
+    source: Tax Foundation
+  winner_state_code_le:
+    cat: geographic
+    details: BrAC measurement was taken on the date of a major sports event and in the
+      winning state
+    label: Winning State Code
+    source: BACtrack app/Calendar Events
+  year:
+    cat: temporal
+    details: Year of BrAC measurement
+    label: Year
+    source: BACtrack smart-breathalyzer
