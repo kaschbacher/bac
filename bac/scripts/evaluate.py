@@ -210,25 +210,19 @@ def main(
         evaluator.log_classification_report(target_names)
         
         # Store for roc-comparison plot
-        if model_name != "majority_class":
+        if model_name != "all_w_majority_class":
             roc_plot[model_name] = {
                 "model_label": model_schema["plot_name"],
                 "y_true": y,
                 "y_prob": y_prob
-            }
-            
-        # # Plot Shap Values for Best Model
-        # if model_name == "all":
-        #     base_folder = Path(io_cfg["figures_fpath"])
-        #     output_folder = base_folder / 'shap/'
-        #     compute_feature_importances(model.model, X, output_folder)
-    
+            }    
     
     # Build & Save Table 1
     model_metrics_df = build_table_1(model_metrics)
     
     # Plot ROC-comparison plot
     plot_order = model_metrics_df["model_name"].tolist()
+    plot_order.remove("all_w_majority_class")
     plot_ROC_comparison(roc_plot, plot_order, figures_fpath, save_plot=True)
     
     logging.info(f"\nEvaluate.py Complete.")

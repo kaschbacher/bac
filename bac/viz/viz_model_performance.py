@@ -13,6 +13,7 @@ from sklearn.metrics import roc_curve, auc
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+# Called by evaluate.py 
 
 FIGURE_PARAMS = {
     'figure.figsize':(2.75,2.75),
@@ -108,7 +109,7 @@ def plot_ROC_comparison(
     n_models = len(roc_plot)
     
     #https://matplotlib.org/3.1.0/tutorials/colors/colors.html
-    c = ['indigo', 'darkgreen', 'goldenrod', 'darkblue', 'teal', 'purple']
+    c = ['indigo', 'darkblue', 'darkgreen', 'goldenrod', 'teal', 'purple']
     # reformat so colors has the same length as y_test or n-models
     colors = [c[i % len(c)] for i in range(n_models)]
 
@@ -120,7 +121,7 @@ def plot_ROC_comparison(
         model_label = roc_plot[model_name]['model_label']
         fpr, tpr, _ = roc_curve(y_true, y_prob)
         roc_auc = auc(fpr, tpr)
-        plt.plot(fpr, tpr, color=colors[i], label='{} AUC: {:0.2f})'.format(model_label, roc_auc))
+        plt.plot(fpr, tpr, color=colors[i], label='{}: AUC={:0.2f}'.format(model_label, roc_auc))
     
     # for y_t, y_p, color, label in zip(y_true, y_prob, colors, labels):
     #     fpr, tpr, _ = roc_curve(y_t, y_p)

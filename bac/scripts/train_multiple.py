@@ -91,7 +91,6 @@ def main(
         logging.info(f"\nBuilding model {model_schema['name']}...")
         
         # Output Filename
-        #model_fname = f"lgbm_model_{model_schema['name']}_{dt.date.today()}"
         model_fname = f"lgbm_model_{model_schema['name']}"
         
         # Set X and y
@@ -108,7 +107,7 @@ def main(
         if target == y_train.name:
             clf = LightGBMModel(**boosting_params)
         elif target == 'majority_class':
-            dummy_params = {"strategy": "stratified"}
+            dummy_params = {"strategy": "most_frequent"}# "stratified"
             clf = DummyModel(**dummy_params)
         else:
             raise ValueError(f"{target} specified in ModelSchemas \

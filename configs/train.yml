@@ -2,7 +2,9 @@
 boosting_params:
   silent: False, 
   class_weight: "balanced"
-  n_estimators: 30
+  n_estimators: 89
+  reg_alpha: .5
+  reg_lambda: .5
     
 fit_params:
   eval_metric: "auc"

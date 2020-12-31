@@ -1,6 +1,10 @@
 import pandas as pd
 from typing import Sequence
 import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 def split_data(data: pd.DataFrame) -> Sequence[pd.DataFrame]:
@@ -12,20 +16,6 @@ def split_data(data: pd.DataFrame) -> Sequence[pd.DataFrame]:
     y = data["bac_clinical"]
     y.name = "bac_clinical"
     return X, y
-
-
-# def assign_train_dev(dfs_map: dict) -> Sequence[pd.DataFrame]:
-#     """
-#     Reformat dictionary into X_train, y_train, etc
-#     -- excluding the user_id in column[1].
-#     """
-#     train = dfs_map["train"]
-#     dev = dfs_map["dev"]
-#     X_train = train.iloc[:, 2:]
-#     y_train = train["bac_clinical"]
-#     X_dev = dev.iloc[:, 2:]
-#     y_dev = dev["bac_clinical"]
-#     return X_train, y_train, X_dev, y_dev
 
 
 def limit_features(
@@ -74,3 +64,17 @@ def fill_missing_data(
         
     logging.info(f"Missing data filled with the value={missing_value}")
     return clean_dfs
+
+
+def compute_class_imbalance(y: pd.Series) -> None:
+    """Compute the class imbalance in a given series of targets (train, test, etc)
+
+    Args:
+        y (pd.Series): A series of 0 and 1's for the target
+        -- Assumes that cases or targets are labeled 1 and non-cases 0
+    """
+    vc = y.value_counts()
+    non_cases = vc.loc[vc.index==0].values[0]
+    cases = vc.loc[vc.index==1].values[0]
+    
+    logging.info(f"N={cases} cases; N={non_cases} non_cases. Class imbalance non-cases to cases: {non_cases/cases}")

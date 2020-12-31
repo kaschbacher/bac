@@ -15,7 +15,7 @@ import datetime as dt
 from bac.models.lgbm_classifier import LightGBMModel
 
 from bac.util.io import load_data_partitions, load_feature_labels
-from bac.util.data_cleaning import limit_features, split_data, fill_missing_data
+from bac.util.data_cleaning import limit_features, split_data, fill_missing_data, compute_class_imbalance
 from bac.util.config import parse_config
 
 logger = logging.getLogger(__name__)
@@ -74,6 +74,9 @@ def main(
     boosting_params = models_config["boosting_params"]
     fit_params = models_config["fit_params"]
     fit_params["eval_set"] = [(X_dev, y_dev)]
+    
+    # Compute Class Imbalance
+    compute_class_imbalance(y_train)
     
     # Train Model
     model = LightGBMModel(**boosting_params)
