@@ -48,7 +48,7 @@ class ModelSchemas():
         bac_estimate = self.config["bac_estimate"]
         model['features'] = self.features.difference(set(bac_estimate))
         model['target'] = 'bac_clinical'
-        model['plot_name'] = 'Remove BrAC Estimate'
+        model['plot_name'] = 'Remove Subjective\nBrAC Estimate'
         schemas.append(model)
         
         model = {}
@@ -56,7 +56,7 @@ class ModelSchemas():
         bac_based_features = self.config["bac_measures"]
         model['features'] = self.features.difference(set(bac_based_features))
         model['target'] = 'bac_clinical'
-        model['plot_name'] = 'Remove BrAC Features'
+        model['plot_name'] = 'Remove Objective\nBrAC Recordings'
         schemas.append(model)
         
         model = {}

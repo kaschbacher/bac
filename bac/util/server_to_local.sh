@@ -5,6 +5,7 @@
 
 
 # ROC-Comparison Plot
+MNT="/media/TisonRaid01/Data_Backup/general_nas/kirstin/bac_repo/bac"
 SERVER=$MNT"/data/figures/roc/roc_comparison.pdf"
 LOCAL="/Users/KAschbacher/desktop/eheart/bac_review/figures/roc"
 scp kaschbacher@tisoncluster.ucsf.edu:$SERVER $LOCAL

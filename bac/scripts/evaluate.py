@@ -87,9 +87,9 @@ class ModelEvaluator():
         assert self.y_true.size>0
         assert self.y_prob.size == self.y_true.size
         
-        self.metrics['roc_auc'] = roc_auc_score(self.y_true, self.y_prob, average='micro', max_fpr=None) 
+        self.metrics['roc_auc'] = roc_auc_score(self.y_true, self.y_prob, max_fpr=None) 
         self.metrics['accuracy'] = accuracy_score(self.y_true, self.y_pred)
-        self.metrics['f1_score'] = f1_score(self.y_true, self.y_pred, average='micro')
+        self.metrics['f1_score'] = f1_score(self.y_true, self.y_pred, average='weighted')
 
 
     def get_confusion_matrix(self):
