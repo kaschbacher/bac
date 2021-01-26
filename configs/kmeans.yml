@@ -1,0 +1,12 @@
+input_fpath: 'data/bac.final_analysis7_geojson_2019-07-04.csv'
+output_fpath: 'data'
+
+km_params:
+  init: 'k-means++' # Method of initialization
+  n_init: 10 # n times algorithm run w/ diff centroid seeds
+  verbose: 0
+  random_state: 7
+  # n_jobs: 12
+  # 'Elkan' is more efficient than 'full' by using triangle inequality, 
+  # but doesn't support sparse data, auto will choose btw full and elkan
+  algorithm: 'auto'
