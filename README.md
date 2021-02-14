@@ -11,7 +11,7 @@ Machine Learning Prediction of High BAC Levels with Smartbreathlyzer Data
 ## Basics
 Clone the code to your machine using the standard Git clone command. If you have SSH keys setup the command is:
 ```bash
-git clone git@github.com:manifoldai/bac.git
+git clone https://github.com/kaschbacher/bac
 ``` 
 
  Important note: **Do not clone your code into Google Drive or DropBox**. There are known issues with MLFlow interacting with the file sync that is happening in the background. Clone to a directory that is not being synced by one of those services. 
